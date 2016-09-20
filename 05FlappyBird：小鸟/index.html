@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <style>
+   div{
+    width: 100px;
+    height: 100px;
+    background-color:pink;
+   }
+  </style>
+</head>
+<body>
+ <div> </div>
+<canvas width="800" height="600" id="cvs"></canvas>
+<script src="loadImages.js"></script>
+<!-- <script src="rect.js"></script> -->
+<script src="bird.js"></script>
+<script src="sky.js"></script>
+<script src="land.js"></script>
+<script src="pipe.js"></script>
+<script>
+    var cvs = document.getElementById('cvs');
+    var ctx = cvs.getContext('2d');
+    var dv=document.getElementsByTagName("div")
+   
+    var imgUrls = [
+        {name: 'birds', path: './res/birds.png'},
+        {name: 'land', path: './res/land.png'},
+        {name: 'pipe1', path: './res/pipe1.png'},
+        {name: 'pipe2', path: './res/pipe2.png'},
+        {name: 'sky', path: './res/sky.png'},
+    ];
+
+
+    loadImages(imgUrls, function (imgEls) {
+       var flag=false;
+     //      cvs.onkeydown=function(event){
+     
+     //   var key=event.keyCode;
+     //   if(key==38){
+         
+     //   }
+     // }
+        
+        // 主逻辑：分为两部分
+        //      1. 创建对象
+        // TODO: 创建小鸟的对象
+       // var a=imgEls;
+      var bird=new Bird(ctx,100,200,imgEls.birds,0.1,0.0005);
+    //   document.addEventListener("keyup",(function(event) {
+
+
+    //     if(event.keyCode==38){
+    //       bird.speed=-0.25;
+    //     }
+    //   }))
+    // document.addEventListener("keydown",(function(event) {
+    //       bird.speed=0.02;
+    //   }))
+    //   为小鸟添加点击事件
+      cvs.addEventListener("click",function(){
+
+         bird.speed=-0.25;   //点击后小鸟速度反方向
+      })
+      var sky=new Sky(ctx,0,0,imgEls.sky,0.1,0);
+      var sky2=new Sky(ctx,800,0,imgEls.sky,0.1,0);
+        sky.scount(2);
+     var land1=new Land(ctx,0,488,imgEls.land,0.1,0);
+     var land2=new Land(ctx,336,488,imgEls.land,0.1,0);
+     var land3=new Land(ctx,336*2,488,imgEls.land,0.1,0);
+     var land4=new Land(ctx,336*3,488,imgEls.land,0.1,0);
+     
+       land1.scount(4);
+    var pipe1=new Pipe(ctx,0,imgEls.pipe1,imgEls.pipe2,0.1,0)
+    var pipe2=new Pipe(ctx,252,imgEls.pipe1,imgEls.pipe2,0.1,0)
+    var pipe3=new Pipe(ctx,252*2,imgEls.pipe1,imgEls.pipe2,0.1,0)
+    var pipe4=new Pipe(ctx,252*3,imgEls.pipe1,imgEls.pipe2,0.1,0)
+    var pipe5=new Pipe(ctx,252*4,imgEls.pipe1,imgEls.pipe2,0.1,0)
+    var pipe6=new Pipe(ctx,252*5,imgEls.pipe1,imgEls.pipe2,0.1,0)
+        pipe2.scount(6,200);
+   
+        // ---------------------------------------------
+        //      2. 主循环
+        // 取间隔时间
+        var start= Date.now();
+        var lastTime = Date.now();
+        // 同样是延迟执行，但是延迟的时间由浏览器来决定：浏览器会尽量让这个延迟时间符合流畅的动画的标准
+        var looper = function () {
+            var now = Date.now();
+            var dt = now - lastTime; // 间隔时间
+            lastTime = now;
+
+            ctx.clearRect(0, 0, 800, 600); // 每帧开始都要把上一帧的图像擦除
+
+            // TODO：调用小鸟的update和draw函数，让小鸟动起来
+             
+            sky2.draw();
+            sky2.update(dt);
+            sky.draw();
+            sky.update(dt);
+
+            // pipe1.draw();
+            // pipe1.update(dt);
+            pipe2.draw();
+            pipe2.update(dt);
+            pipe3.draw();
+            pipe3.update(dt);
+            pipe4.draw();
+            pipe4.update(dt);
+            pipe5.draw();
+            pipe5.update(dt);
+            pipe6.draw();
+            pipe6.update(dt);
+
+            land1.draw()
+            land2.draw()
+            land3.draw()
+            land4.draw()
+            land1.update(dt)
+            land2.update(dt)
+            land3.update(dt)
+            land4.update(dt)
+           
+          
+           
+            bird.draw();
+            bird.update(dt);
+           
+           
+            // ---------------------------------------------
+            // 我们需要这个函数被反复的执行
+            if(bird.y>488-45/2||bird.y<0-45/2){  
+                flag=true;
+               
+            }
+          flag=flag||pipe1.texts(bird.x,bird.y);
+          flag=flag||pipe2.texts(bird.x,bird.y);
+          flag=flag||pipe3.texts(bird.x,bird.y);
+          flag=flag||pipe4.texts(bird.x,bird.y);
+          flag=flag||pipe5.texts(bird.x,bird.y);
+          flag=flag||pipe6.texts(bird.x,bird.y);
+          // flag=false;
+    
+            // bird.x>pipe1.x&& bird.x<pipe1.x+52||
+             var end=Date.now();
+            if(!flag){
+
+                 requestAnimationFrame(looper);
+                 // var end=Date.now();
+                  var live=end-start;
+                // console.log(live);
+                var score=Math.floor((live-1500)/2500)*10;
+                // console.log(score);
+
+            }
+           else{
+             // var end=Date.now();
+                var live=end-start;
+                // console.log(live);
+                var score=Math.floor((live-1500)/2500)*10;
+              /*  console.log(score);*/
+                // alert(score)
+               
+           }
+            // 这个函数执行到最后：会再次延迟执行自身
+        };
+         dv.innerText=10;
+        requestAnimationFrame(looper)
+
+    })
+
+
+</script>
+</body>
+</html>
